@@ -22,6 +22,10 @@ using System.Web.Mvc;
 using Ninject.Web.WebApi;
 using ReactApiNetEDMX.Store.Interfaces;
 using ReactApiNetEDMX.Store.Repositories;
+using Microsoft.IdentityModel.Tokens;
+using ReactApiNetEDMX;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
 
 namespace ReactCoreApiApp
 {
@@ -37,6 +41,30 @@ namespace ReactCoreApiApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<JWTConfig>(Configuration.GetSection("JWTConfig"));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            // укзывает, будет ли валидироваться издатель при валидации токена
+                            ValidateIssuer = true,
+                            // строка, представляющая издателя
+                            ValidIssuer = Configuration["JwtConfig:ISSUER"],
+                            // будет ли валидироваться потребитель токена
+                            ValidateAudience = true,
+                            // установка потребителя токена
+                            ValidAudience = Configuration["JwtConfig:AUDIENCE"],
+                            // будет ли валидироваться время существования
+                            ValidateLifetime = true,
+
+                            // установка ключа безопасности
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtConfig:KEY"])),
+                            // валидация ключа безопасности
+                            ValidateIssuerSigningKey = true,
+                        };
+                    });
             services.AddAutoMapper(typeof(Startup));
             services.AddMemoryCache();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -48,6 +76,7 @@ namespace ReactCoreApiApp
             var shopEntitiesConnString = Configuration.GetConnectionString("ShopEntities");
             services.AddScoped(_ => new ReactApiNetEDMX.Store.Repositories.ShopEntities(shopEntitiesConnString));
             services.AddScoped(typeof(IGenericRepository<>), typeof(EFGenericRepository<>));
+            services.AddScoped(typeof(IUsersRepository), typeof(UsersRepository));
             services.AddControllers().AddNewtonsoftJson(); 
 
         }
@@ -69,6 +98,7 @@ namespace ReactCoreApiApp
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

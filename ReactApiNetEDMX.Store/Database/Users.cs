@@ -9,6 +9,7 @@
 
 namespace ReactApiNetEDMX.Store.Database
 {
+    using ReactApiNetEDMX.Store.DataAccessObjects.Enum;
     using System;
     using System.Collections.Generic;
     
@@ -18,6 +19,8 @@ namespace ReactApiNetEDMX.Store.Database
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
-        public string Role { get; set; }
+        public int Role { get; set; }
+        public string Login { get; set; }
+        public string Password { get; set; }
     }
 }

@@ -19,16 +19,6 @@
     <Property Name="AddressId" Type="Int32" />
     <NavigationProperty Name="Addresses" Relationship="Self.FK_Products_Addresses" FromRole="Products" ToRole="Addresses" />
   </EntityType>
-  <EntityType Name="Users">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="MiddleName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="Role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-  </EntityType>
   <Association Name="FK_Products_Addresses">
     <End Role="Addresses" Type="Self.Addresses" Multiplicity="0..1" />
     <End Role="Products" Type="Self.Products" Multiplicity="*" />
@@ -44,10 +34,22 @@
   <EntityContainer Name="ShopEntities" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="Addresses" EntityType="Self.Addresses" />
     <EntitySet Name="Products" EntityType="Self.Products" />
-    <EntitySet Name="Users" EntityType="Self.Users" />
     <AssociationSet Name="FK_Products_Addresses" Association="Self.FK_Products_Addresses">
       <End Role="Addresses" EntitySet="Addresses" />
       <End Role="Products" EntitySet="Products" />
     </AssociationSet>
+    <EntitySet Name="Users" EntityType="ShopModel.Users" />
   </EntityContainer>
+  <EntityType Name="Users">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="MiddleName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Role" Type="Int32" Nullable="false" />
+    <Property Name="Login" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Password" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+  </EntityType>
 </Schema>
